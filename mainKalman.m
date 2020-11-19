@@ -9,7 +9,7 @@ sigmaRKF = 2; %Measurement noise tuning for the KF
 sigmaQsys = 0.1; %Real system perturbations
 sigmaRsense= 2; %Real sensor noise
 T = 0.1; %Sampling time
-Tsim = 10; %Simulation time
+Tsim = 6; %Simulation time
 g = 9.81; %Gravity
 
 model = 'CA'; %CV for constant velocity, CA for constant acceleration
