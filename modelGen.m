@@ -1,4 +1,4 @@
-function [A,C,Q,R,n,m] = modelGen(modelName,T,sigmaQ,sigmaR)
+function [A,C,Q,R,Qsys,Rsense,n,m] = modelGen(modelName,T,sigmaQ,sigmaR,sigmaQsys,sigmaRsense)
 
 if strcmpi(modelName,'CV') %Constant velocity
 
@@ -20,6 +20,12 @@ if strcmpi(modelName,'CV') %Constant velocity
             0 0 0 0.1]; %Process noise covariance (filter)
         
     R = sigmaR*eye(m); %Measurement noise covariance (filter)
+    
+    %Sensor noise covariance
+    Rsense = sigmaRsense*eye(m);
+
+    %Perturbations on the real system
+    Qsys = sigmaQsys*eye(n);
     
 elseif strcmpi(modelName,'CA') %Constant acceleration
     
@@ -45,6 +51,17 @@ elseif strcmpi(modelName,'CA') %Constant acceleration
             0 0 0 0 0 0];%Process noise covariance (filter)
         
     R = sigmaR*eye(m); %Measurement noise covariance (filter)
+    
+    %Sensor noise covariance
+    Rsense = sigmaRsense*eye(m);
+
+    %Perturbations on the real system
+    Qsys = sigmaQsys*[1 0 0 0 0 0;...
+                      0 1 0 0 0 0;...
+                      0 0 1 0 0 0;...
+                      0 0 0 1 0 0;...
+                      0 0 0 0 0 0;...
+                      0 0 0 0 0 0];
 end
 
 

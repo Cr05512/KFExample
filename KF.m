@@ -1,4 +1,4 @@
-function [x_pred,P_pred,x_est,P_est,z_pred,z_est] = KF(x_pred,P_pred,z,A,C,Q,R)
+function [x_est,P_est,x_pred,P_pred,z_est,z_pred] = KF(x_pred,P_pred,z,A,C,Q,R)
 
 %The state vector is [x; v_x; y; v_y], that is we are estimating 2D
 %cartesian position and velocity of a moving target.
@@ -13,10 +13,14 @@ x_est = x_pred + K_k*(z - z_pred);
 P_est = P_pred - K_k*C*P_pred;
 
 z_est = measurementModel(x_est,C);
+
 %Prediction
 
 x_pred = motionModel(x_est,A);
 P_pred = A*P_est*A' + Q;
+
+
+
 
 
 end
