@@ -5,19 +5,20 @@ function [x_est,P_est,x_pred,P_pred,z_est,z_pred] = KF(x_pred,P_pred,z,A,C,Q,R)
 %We can measure only the position.
 
 %Correction
-z_pred = measurementModel(x_pred,C);
-S = C*P_pred*C' + R;
-K_k = P_pred*C'*inv(S);
+z_pred = measurementModel(x_pred,C); %Predicted measurement
+S = C*P_pred*C' + R;  %Innovation covariance
+K_k = P_pred*C'*inv(S); %Kalman Gain
 
-x_est = x_pred + K_k*(z - z_pred);
-P_est = P_pred - K_k*C*P_pred;
+epsilon = z - z_pred;  %Innovation
+x_est = x_pred + K_k*epsilon; %State update
+P_est = P_pred - K_k*C*P_pred; %error Covariance update
 
-z_est = measurementModel(x_est,C);
+z_est = measurementModel(x_est,C); %Estimated measurement
 
 %Prediction
 
-x_pred = motionModel(x_est,A);
-P_pred = A*P_est*A' + Q;
+x_pred = motionModel(x_est,A); %State prediction
+P_pred = A*P_est*A' + Q; %error covariance prediction
 
 
 
