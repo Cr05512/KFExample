@@ -4,10 +4,10 @@ close all
 
 %This script implements a standard Kalman filter on a 2D constant velocity
 %and acceleration models.
-sigmaQKF = 0.05; %Process noise tuning for the KF
-sigmaRKF = 4; %Measurement noise tuning for the KF
-sigmaQsys = 0.05; %Real system perturbations
-sigmaRsense= 4; %Real sensor noise
+sigmaQKF = 0.1; %Process noise tuning for the KF
+sigmaRKF = 2; %Measurement noise tuning for the KF
+sigmaQsys = 0.1; %Real system perturbations
+sigmaRsense= 2; %Real sensor noise
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
 g = 9.81; %Gravity

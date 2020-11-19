@@ -11,7 +11,6 @@ K_k = P_pred*C'*inv(S);
 
 x_est = x_pred + K_k*(z - z_pred);
 P_est = P_pred - K_k*C*P_pred;
-norm(P_est)
 
 z_est = measurementModel(x_est,C);
 %Prediction
