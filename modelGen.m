@@ -1,4 +1,4 @@
-function [A,C,Q,R,Qsys,Rsense,n,m] = modelGen(modelName,T,sigmaQ,sigmaR,sigmaQsys,sigmaRsense)
+function [A,C,Q,R,n,m] = modelGen(modelName,T,sigmaQ,sigmaR)
 
 if strcmpi(modelName,'CV') %Constant velocity
 
@@ -14,18 +14,23 @@ if strcmpi(modelName,'CV') %Constant velocity
     C = [1 0 0 0;...  %We observe px and py only
          0 1 0 0];
      
-    Q = sigmaQ*[1 0 0 0;...
-            0 1 0 0;...
-            0 0 0.1 0;...
-            0 0 0 0.1]; %Process noise covariance (filter)
+    Q =    [T^3/3 0 T^2/2 0;...
+            0 T^3/3 0 T^2/2;...
+            T^2/2 0 T 0;...
+            0 T^2/2 0 T];
         
-    R = sigmaR*eye(m); %Measurement noise covariance (filter)
+%     %Perturbations on the real system
+%     Qsys = sigmaQsys*Q;
     
-    %Sensor noise covariance
-    Rsense = sigmaRsense*eye(m);
+    %Process noise covariance (filter)
+    Q = sigmaQ*Q;
+    
+    R = sigmaR*eye(m); %Measurement noise covariance (filter)
+%     
+%     %Sensor noise covariance
+%     Rsense = sigmaRsense*eye(m);
 
-    %Perturbations on the real system
-    Qsys = sigmaQsys*eye(n);
+    
     
 elseif strcmpi(modelName,'CA') %Constant acceleration
     
@@ -43,25 +48,25 @@ elseif strcmpi(modelName,'CA') %Constant acceleration
     C = [1 0 0 0 0 0;...
          0 1 0 0 0 0];
      
-    Q = sigmaQ*[1 0 0 0 0 0;...
-            0 1 0 0 0 0;...
-            0 0 0.1 0 0 0;...
-            0 0 0 0.1 0 0;...
-            0 0 0 0 0 0;...
-            0 0 0 0 0 0];%Process noise covariance (filter)
+    Q =     [T^5/20 0 T^4/8 0 T^3/6 0;...
+             0 T^5/20 0 T^4/8 0 T^3/6;...
+             T^4/8 0 T^3/3 0 T^2/2 0;...
+             0 T^4/8 0 T^3/3 0 T^2/2;...
+             T^3/6 0 T^2/2 0 T 0;...
+             0 T^3/6 0 T^2/2 0 T];
+        
+%     %Perturbations on the real system
+%     Qsys = sigmaQsys*Q;
+    
+    %Process noise covariance (filter)
+    Q = sigmaQ*Q;
         
     R = sigmaR*eye(m); %Measurement noise covariance (filter)
-    
-    %Sensor noise covariance
-    Rsense = sigmaRsense*eye(m);
+%     
+%     %Sensor noise covariance
+%     Rsense = sigmaRsense*eye(m);
 
-    %Perturbations on the real system
-    Qsys = sigmaQsys*[1 0 0 0 0 0;...
-                      0 1 0 0 0 0;...
-                      0 0 1 0 0 0;...
-                      0 0 0 1 0 0;...
-                      0 0 0 0 0 0;...
-                      0 0 0 0 0 0];
+    
 end
 
 

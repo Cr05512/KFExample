@@ -1,4 +1,4 @@
-function [x_est,P_est,x_pred,P_pred,z_est,z_pred] = KF(x_pred,P_pred,z,A,C,Q,R)
+function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = KF(x_pred,P_pred,z,A,C,Q,R)
 
 %The state vector is [x; v_x; y; v_y], that is we are estimating 2D
 %cartesian position and velocity of a moving target.
@@ -6,8 +6,8 @@ function [x_est,P_est,x_pred,P_pred,z_est,z_pred] = KF(x_pred,P_pred,z,A,C,Q,R)
 
 %Correction
 z_pred = measurementModel(x_pred,C); %Predicted measurement
-S = C*P_pred*C' + R;  %Innovation covariance
-K_k = P_pred*C'*inv(S); %Kalman Gain
+S_kinv = inv(C*P_pred*C' + R);  %Innovation covariance
+K_k = P_pred*C'*S_kinv; %Kalman Gain
 
 epsilon = z - z_pred;  %Innovation
 x_est = x_pred + K_k*epsilon; %State update
