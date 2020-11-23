@@ -2,11 +2,12 @@ clc
 clear
 close all
 
+
 %This script implements a standard Kalman filter on a 2D constant velocity
 %and acceleration models.
 sigmaQKF = 2; %Process noise tuning for the KF
 sigmaRKF = 5; %Measurement noise tuning for the KF
-sigmaQsys = 0.5; %Real system perturbations
+sigmaQsys = 0.2; %Real system perturbations
 sigmaRsense= 4; %Real sensor noise
 sigmaXInit = 3; %Spread factor of the init estimate around the real state
 sigmaPInit = 6; %Tuning parameter of the error estimate covariance
@@ -51,6 +52,7 @@ P_pred = sigmaPInit*(P_pred*P_pred');
 
 
 numSteps = size(z_vector,2); %The number of filter iterations is equal to the number of observations we do
+
 
 for k=1:numSteps
     [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv]=KF(x_pred,P_pred,z_vector(:,k),A,C,QKF,RKF);
