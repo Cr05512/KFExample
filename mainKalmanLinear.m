@@ -6,18 +6,19 @@ close all
 %This script implements a standard Kalman filter on a 2D constant velocity
 %and acceleration models.
 sigmaQKF = 1; %Process noise tuning for the KF
-sigmaRKF = 0.5; %Measurement noise tuning for the KF
+sigmaRKF = 4; %Measurement noise tuning for the KF
 sigmaQsys = 0.1; %Real system perturbations
-sigmaRsense= 0.5; %Real sensor noise
-sigmaXInit = 5; %Spread factor of the init estimate around the real state
-sigmaPInit = 5; %Tuning parameter of the error estimate covariance
+sigmaRsense= 2; %Real sensor noise
+sigmaXInit = 40; %Spread factor of the init estimate around the real state
+sigmaPInit = 40; %Tuning parameter of the error estimate covariance
 
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
 g = 9.81; %Gravity
 
-modelName = 'CV'; %CV for constant velocity, CA for constant acceleration
-trajGen = 'UD'; 
+modelName = 'CA'; %CV for constant velocity, CA for constant acceleration
+trajGen = 'model'; 
+dynPlot = 1;
 
 %Model parameters
 [A,C,QKF,RKF,n,m] = modelGen(modelName,T,sigmaQKF,sigmaRKF); 
@@ -26,9 +27,9 @@ trajGen = 'UD';
 
 %Initial state
 if strcmpi(modelName,'CV')
-    x0 = [0;0;-20;20]; %Constant velocity
+    x0 = [0;0;-9;9]; %Constant velocity
 elseif strcmpi(modelName,'CA')
-    x0 = [0;0;9;3;0;-g]; %Constant acceleration
+    x0 = [0;0;9;30;0;-g]; %Constant acceleration
 end
 
 %Data generation
@@ -77,39 +78,36 @@ for k=1:numSteps
 end
 
 
-f1 = figure(1);
-grid minor
-hold on
-axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
-axis square
+if dynPlot==1
+    f1 = figure(1);
+    grid minor
+    hold on
+    %axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
+    axis square
 
-pause()
+    pause()
 
-for k=1:numSteps
-    h1 = plot(x_true(1,k),x_true(2,k),'-bx','LineWidth',14); hold on; 
-    plot(x_true(1,1:k),x_true(2,1:k),'-b'); hold on; 
-    scatter(z_vector(1,k),z_vector(2,k),'ko'); hold on
-    h2 = plot(x_est_vec(1,k+1),x_est_vec(2,k+1),'-r+','LineWidth',14); hold on;
-    plot(x_est_vec(1,1:k+1),x_est_vec(2,1:k+1),'-.r'); hold on;
-    [errEllipse,V,lambda] = errorEllipses(x_est_vec(1:2,k+1),P_est(1:2,1:2),alpha,200);
-    hEll = plot(errEllipse(1,:),errEllipse(2,:),':m','LineWidth',2);
-    hEig1 = quiver(x_est_vec(1,k+1), x_est_vec(2,k+1), sqrt(lambda(1))*V(1,1), sqrt(lambda(1))*V(2,1), '-m', 'LineWidth',2); hold on
-    hEig2 = quiver(x_est_vec(1,k+1), x_est_vec(2,k+1), sqrt(lambda(2))*V(1,2), sqrt(lambda(2))*V(2,2), '-g', 'LineWidth',2); hold on
-    
-    
-    pause(0.05)
-    if k<numSteps
-        set(h1,'Visible','off');
-        set(h2,'Visible','off');
-        set(hEll,'Visible','off');
-        set(hEig1,'Visible','off');
-        set(hEig2,'Visible','off');
+    for k=1:numSteps
+        h1 = plot(x_true(1,k),x_true(2,k),'-bx','LineWidth',14); hold on; 
+        plot(x_true(1,1:k),x_true(2,1:k),'-b'); hold on; 
+        scatter(z_vector(1,k),z_vector(2,k),'ko'); hold on
+        h2 = plot(x_est_vec(1,k+1),x_est_vec(2,k+1),'-r+','LineWidth',14); hold on;
+        plot(x_est_vec(1,1:k+1),x_est_vec(2,1:k+1),'-.r'); hold on;
+        [errEllipse,lambda,V] = errorEllipses(x_est_vec(1:2,k+1),P_est_vec(1:2,1:2,k+1),alpha);
+        hEll = plot(errEllipse(1,:),errEllipse(2,:),':m','LineWidth',2); hold on
+
+        pause(0.1)
+        if k<numSteps
+            set(h1,'Visible','off');
+            set(h2,'Visible','off');
+            set(hEll,'Visible','off');
+        end
     end
+
+    pause()
+
+    close(f1);
 end
-
-pause()
-
-close(f1);
 
 %2D position plot
 figure(2)
@@ -154,6 +152,8 @@ grid minor
 legend('z2_{true}','z2_{noise}','z2_{est}');
 xlabel('t');
 ylabel('p_y');
+
+NISTest(nis_vec,alpha,m);
 
 
 
