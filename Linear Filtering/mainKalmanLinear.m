@@ -5,12 +5,12 @@ close all
 
 %This script implements a standard Kalman filter on a 2D constant velocity
 %and acceleration models.
-sigmaQKF = 1; %Process noise tuning for the KF
+sigmaQKF = 0.5; %Process noise tuning for the KF
 sigmaRKF = 4; %Measurement noise tuning for the KF
 sigmaQsys = 0.1; %Real system perturbations
 sigmaRsense= 2; %Real sensor noise
-sigmaXInit = 40; %Spread factor of the init estimate around the real state
-sigmaPInit = 40; %Tuning parameter of the error estimate covariance
+sigmaXInit = 50; %Spread factor of the init estimate around the real state
+sigmaPInit = 50; %Tuning parameter of the error estimate covariance
 
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
@@ -18,7 +18,7 @@ g = 9.81; %Gravity
 
 modelName = 'CA'; %CV for constant velocity, CA for constant acceleration
 trajGen = 'model'; 
-dynPlot = 1;
+dynPlot = 0;
 
 %Model parameters
 [A,C,QKF,RKF,n,m] = modelGen(modelName,T,sigmaQKF,sigmaRKF); 
@@ -59,7 +59,7 @@ x_est_vec(:,1) = x_pred;
 
 
 P_pred = rand(n,n);
-P_pred = sqrt(sigmaPInit)*(P_pred*P_pred');
+P_pred = sigmaPInit*(P_pred*P_pred');
 P_est_vec(:,:,1) = P_pred;
 
 
@@ -82,7 +82,7 @@ if dynPlot==1
     f1 = figure(1);
     grid minor
     hold on
-    %axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
+    axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
     axis square
 
     pause()

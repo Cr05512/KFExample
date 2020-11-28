@@ -1,4 +1,4 @@
-function [x_est, x_Part] = PF(x_Part,z,sigmaQ,sigmaR,k)
+function [x_est, x_Part, x_Part_upd] = PF(x_Part,z,sigmaQ,sigmaR,k)
 
 N = length(x_Part);
 

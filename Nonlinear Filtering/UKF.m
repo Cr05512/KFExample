@@ -25,13 +25,5 @@ function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = UKF(x_pred,P_pred,w,l
     [x_pred,Px] = computeMomentsSigmaPoints(w,X_pred);
     P_pred = Px + sigmaQ;
     
-%   Vecchio Filtro
-%     [xk_pred,Ak,Qd] = discretizedProcessModel(k,xk_est);
-%     Ck = linearizedMeasurementModel(xk_pred);
-%     Pk_pred = Ak*Pk_est*Ak' + Qd;
-%     K = Pk_pred*Ck'*inv(Ck*Pk_pred*Ck' + Rd);
-%     Pk_est = (eye(7)-K*Ck)*Pk_pred;
-%     yk_pred = measurementModel(xk_pred);
-%     xk_est_next = xk_pred + K*(yk-yk_pred);
 end
 

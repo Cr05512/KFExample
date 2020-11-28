@@ -11,8 +11,8 @@ sigmaRsense= 1; %Real sensor noise
 sigmaXInit = 3; %Spread factor of the init estimate around the real state
 sigmaPInit = 3; %Tuning parameter of the error estimate covariance
 
-N_Particles = 50; %Note: by selecting a low number of particles you might incur in a total depletion. Select at least N=50
-plotParticles = 0;
+N_Particles = 50;
+plotParticles = 1;
 
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
@@ -56,28 +56,28 @@ Part_vec = zeros(N_Particles,numSteps);
 %UKF
 lambda = 1;
 w = computeWeights(n,lambda);
-exec_times = zeros(3,1);
+exec_times = zeros(2,1);
 
 for k=1:numSteps
     tic;
-    [x_est(1,k+1),P_est(1),x_pred,P_pred(1),z_est(1,k),z_pred(1),~]=UKF(x_pred,P_pred(1),w,lambda,z_vector(k),sigmaQ,sigmaR,k);
+    [x_est(1,k+1),P_est(1),x_pred,P_pred(1),z_est(1,k),z_pred(1),S_kinv]=UKF(x_pred,P_pred(1),w,lambda,z_vector(k),sigmaQ,sigmaR,k);
     exec_times(1) = exec_times(1) + toc;
     
     tic;
-    [x_est(2,k+1),P_est(2),x_pred,P_pred(2),z_est(1,k),z_pred(2),~]=EKF(x_pred,P_pred(2),z_vector(k),sigmaQ,sigmaR,k);
-    exec_times(2) = exec_times(1) + toc;
+    [x_est(2,k+1),P_est(2),x_pred,P_pred(2),z_est(1,k),z_pred(1),S_kinv]=UKF(x_pred,P_pred(1),w,lambda,z_vector(k),sigmaQ,sigmaR,k);
+    exec_times(1) = exec_times(1) + toc;
     
 
     tic;
-    [x_est(3,k+1),x_Part,x_Part_upd]=PF(x_Part,z_vector(k),sigmaQ,sigmaR,k);
+    [x_est(2,k+1),x_Part,x_Part_upd]=PF(x_Part,z_vector(k),sigmaQ,sigmaR,k);
     Part_vec(:,k) = x_Part_upd;
-    exec_times(3) = exec_times(2) + toc;
+    exec_times(2) = exec_times(2) + toc;
 
     
 end
 
 figure(1)
-subplot(3,1,1)
+subplot(2,1,1)
 
 plot(T:T:Tsim,x_true); hold on
 plot(0:T:Tsim,x_est(1,:)); hold on
@@ -87,20 +87,10 @@ xlabel('t');
 ylabel('p');
 title(strcat(['UKF estimate. Execution time: ',' ',num2str(exec_times(1)),'s']));
 
-subplot(3,1,2)
+subplot(2,1,2)
 
 plot(T:T:Tsim,x_true); hold on
 plot(0:T:Tsim,x_est(2,:)); hold on
-grid minor
-legend('True trajectory','EKF estimate');
-xlabel('t');
-ylabel('p');
-title(strcat(['EKF estimate. Execution time: ',' ',num2str(exec_times(2)),'s']));
-
-subplot(3,1,3)
-
-plot(T:T:Tsim,x_true); hold on
-plot(0:T:Tsim,x_est(3,:)); hold on
 if plotParticles==1
     for k=1:numSteps
         plot(k*T,Part_vec(:,k),'.k'); hold on
@@ -110,7 +100,7 @@ grid minor
 legend('True trajectory','PF estimate');
 xlabel('t');
 ylabel('p');
-title(strcat(['PF estimate. Execution time: ',' ',num2str(exec_times(3)),'s',' ','N=',num2str(N_Particles)]));
+title(strcat(['PF estimate. Execution time: ',' ',num2str(exec_times(2)),'s',' ','N=',num2str(N_Particles)]));
 
 figure(2)
 
@@ -119,22 +109,16 @@ RMSE_UKF = sum(RMSE_UKF,1).^2 / n;
 RMSE_UKF = sqrt(RMSE_UKF);
 mean(RMSE_UKF)
 
-RMSE_EKF = x_true-x_est(2,2:end);
-RMSE_EKF = sum(RMSE_EKF,1).^2 / n;
-RMSE_EKF = sqrt(RMSE_EKF);
-mean(RMSE_EKF)
-
-RMSE_PF = x_true-x_est(3,2:end);
+RMSE_PF = x_true-x_est(2,2:end);
 RMSE_PF = sum(RMSE_PF,1).^2 / n;
 RMSE_PF = sqrt(RMSE_PF);
 mean(RMSE_PF)
 
 plot(T:T:Tsim,RMSE_UKF); hold on
-plot(T:T:Tsim,RMSE_EKF); hold on
 plot(T:T:Tsim,RMSE_PF); hold on
 grid minor
 title('Error between true and estimated state')
-legend('RMSE UKF','RMSE EKF','RMSE PF')
+legend('RMSE UKF','RMSE PF')
 
 
 
