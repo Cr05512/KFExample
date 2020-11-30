@@ -1,9 +1,9 @@
 function dh = jacobianMeasModel(xk_pred)
-syms xk
+xk = sym('xk',[length(xk_pred) 1]);
 
 h = NLMeasurementModel(xk);
 
-dh = diff(h,xk);
+dh = jacobian(h,xk);
 dh = double(subs(dh,xk,xk_pred));
 end
 

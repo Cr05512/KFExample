@@ -1,6 +1,6 @@
 function z = NLMeasurementModel(x)
 
-z = x^2/20;
+z = x.^2/20;
 
 end
 
