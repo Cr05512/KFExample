@@ -126,11 +126,9 @@ legend('True trajectory','Estimated trajectory','Observations');
 
 figure(3)
 
-RMSE = x_true-x_est_vec(:,2:end);
-RMSE = sum(RMSE,1).^2 / n;
-RMSE = sqrt(RMSE);
+RMSE_KF = RMSE(x_true,x_est_vec(:,2:end));
 
-plot(T:T:Tsim,RMSE);
+plot(T:T:Tsim,RMSE_KF);
 grid minor
 title('Error between true and estimated state')
 legend('RMSE')

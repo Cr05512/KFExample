@@ -1,4 +1,4 @@
-function [x_est, x_Part, x_Part_upd] = PF(x_Part,z,sigmaQ,sigmaR,k)
+function [x_est, x_Part, x_Part_upd] = PF(x_Part,z,Q,R,k)
 
 N = length(x_Part);
 
@@ -10,8 +10,8 @@ w_P = zeros(length(x_Part));
 %We use the particles to compute the likelihoods
 
 for i=1:N
-    z_Part_pred(i) = NLMeasurementModel1D(x_Part(i));
-    w_P(i) = normpdf(z,z_Part_pred(i),sqrt(sigmaR));
+    z_Part_pred(i) = NLMeasurementModel(x_Part(i));
+    w_P(i) = normpdf(z,z_Part_pred(i),sqrtm(R));
 end
 
 %Weight renormalization
@@ -29,7 +29,7 @@ x_est = mean(x_Part_upd);
 %Prediction
 
 for i=1:N
-    x_Part(i) = NLMotionModel1D(x_Part_upd(i),k) + sqrt(sigmaQ)*randn();
+    x_Part(i) = NLMotionModel(x_Part_upd(i),k) + sqrtm(Q)*randn();
 end
 
 end
