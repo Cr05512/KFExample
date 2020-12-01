@@ -4,18 +4,18 @@ close all
 
 
 %This script implements nonlinear filters on a 1D nonlinear model.
-sigmaQ = 2; %Process noise tuning for the KF
-sigmaR = 2; %Measurement noise tuning for the KF
-sigmaQsys = 1; %Real system perturbations
-sigmaRsense= 1; %Real sensor noise
+sigmaQ = 6; %Process noise tuning for the KF
+sigmaR = 10; %Measurement noise tuning for the KF
+sigmaQsys = 4; %Real system perturbations
+sigmaRsense= 6; %Real sensor noise
 sigmaXInit = 3; %Spread factor of the init estimate around the real state
 sigmaPInit = 3; %Tuning parameter of the error estimate covariance
 
 N_Particles = 50; %Note: by selecting a low number of particles you might incur in a total depletion. Select at least N=50
 plotParticles = 1;
 
-T = 1; %Sampling time
-Tsim = 100; %Simulation time
+T = 0.1; %Sampling time
+Tsim = 10; %Simulation time
 n=1;
 m=1;
 

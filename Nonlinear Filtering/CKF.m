@@ -9,7 +9,7 @@ function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = CKF(x_pred,P_pred,z,Q
     S_k = Pz + R;
     S_kinv = inv(S_k);
     
-    T_k = computeCrossCorrelationCKF(x_pred,z_pred,X_pred,Z_pred);
+    T_k = computeCrossCorrelation(w,x_pred,z_pred,X_pred,Z_pred);
     K_k = T_k*S_kinv;
     
     epsilon = z - z_pred;  %Innovation
