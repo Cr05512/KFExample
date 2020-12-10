@@ -1,4 +1,4 @@
-function z = NLMeasurementModel(x)
+function z = NLMeasurementModel(x,k,T)
 
 z = x.^2/20;
 

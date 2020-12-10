@@ -48,7 +48,7 @@ P_est_vec = zeros(n,n,size(x_true,2)+1);
 
 %Consistency
 nis_vec = zeros(size(z_vector,2),1);
-alpha = 0.95;
+alpha = 0.9544;
 
 %Note the x_est vector contains one more element (the initial guess) in
 %order to show how a wrong init of the filter can be handled
