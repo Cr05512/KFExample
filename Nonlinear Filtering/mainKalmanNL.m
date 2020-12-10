@@ -12,7 +12,7 @@ sigmaXInit = 3; %Spread factor of the init estimate around the real state
 sigmaPInit = 3; %Tuning parameter of the error estimate covariance
 
 N_Particles = 50; %Note: by selecting a low number of particles you might incur in a total depletion. Select at least N=50
-plotParticles = 1;
+plotParticles = 0;
 
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
@@ -55,7 +55,8 @@ Part_vec = zeros(N_Particles,numSteps);
 
 %UKF
 lambda = 2-n;
-w = computeUTWeights(n,lambda);
+w_UKF = computeUTWeights(n,lambda);
+w_CKF = 1/(2*n) *ones(2*n,1);
 exec_times = zeros(4,1);
 
 for k=1:numSteps
@@ -65,11 +66,11 @@ for k=1:numSteps
     exec_times(1) = exec_times(1) + toc;
 
     tic;
-    [x_est(2,k+1),P_est(2),x_pred(2),P_pred(2),z_est(2,k),z_pred(2),~]=UKF(x_pred(2),P_pred(2),w,lambda,z_vector(k),Q,R,k,T);
+    [x_est(2,k+1),P_est(2),x_pred(2),P_pred(2),z_est(2,k),z_pred(2),~]=UKF(x_pred(2),P_pred(2),w_UKF,lambda,z_vector(k),Q,R,k,T);
     exec_times(2) = exec_times(2) + toc;
     
     tic;
-    [x_est(3,k+1),P_est(3),x_pred(3),P_pred(3),z_est(3,k),z_pred(3),~]=CKF(x_pred(3),P_pred(3),z_vector(k),Q,R,k,T);
+    [x_est(3,k+1),P_est(3),x_pred(3),P_pred(3),z_est(3,k),z_pred(3),~]=CKF(x_pred(3),P_pred(3),w_CKF,z_vector(k),Q,R,k,T);
     exec_times(3) = exec_times(3) + toc;
     
 
@@ -133,16 +134,16 @@ figure(2)
 %%
 
 RMSE_EKF = RMSE(x_true,x_est(1,2:end));
-mean(RMSE_EKF)
+disp(horzcat('RMSE EKF: ',num2str(mean(RMSE_EKF))));
 
 RMSE_UKF = RMSE(x_true,x_est(2,2:end));
-mean(RMSE_UKF)
+disp(horzcat('RMSE UKF: ',num2str(mean(RMSE_UKF))));
 
 RMSE_CKF = RMSE(x_true,x_est(3,2:end));
-mean(RMSE_CKF)
+disp(horzcat('RMSE CKF: ',num2str(mean(RMSE_CKF))));
 
 RMSE_PF = RMSE(x_true,x_est(4,2:end));
-mean(RMSE_PF)
+disp(horzcat('RMSE PF: ',num2str(mean(RMSE_PF))));
 
 plot(T:T:Tsim,RMSE_EKF); hold on
 plot(T:T:Tsim,RMSE_UKF); hold on

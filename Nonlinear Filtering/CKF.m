@@ -1,12 +1,6 @@
-function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = CKF(x_pred,P_pred,z,Q,R,k,T)
+function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = CKF(x_pred,P_pred,w,z,Q,R,k,T)
 
-    m = 2*size(x_pred,1);
-    w = 1/m *ones(m,1);
-    X_pred = computeThirdDegCubatureSet(x_pred,P_pred);
-    Z_pred = cell2mat(arrayfun(@(i) NLMeasurementModel(X_pred(:,i)), 1:size(X_pred,2),'UniformOutput',false));
-    
-    [z_pred,Pz] = computeMomentsFromSamples(w,Z_pred);
-    S_k = Pz + R;
+    [z_pred,S_k,X_pred,Z_pred] = CT(@NLMeasurementModel,x_pred,P_pred,w,R,k,T);
     S_kinv = inv(S_k);
     
     T_k = computeCrossCorrelation(w,x_pred,z_pred,X_pred,Z_pred);
@@ -18,12 +12,7 @@ function [x_est,P_est,x_pred,P_pred,z_est,z_pred,S_kinv] = CKF(x_pred,P_pred,z,Q
     
     z_est = NLMeasurementModel(x_est); %Estimated measurement
     
-    X_est = computeThirdDegCubatureSet(x_est,P_est);
-    
-    X_pred = cell2mat(arrayfun(@(i) NLMotionModel(X_est(:,i),k,T), 1:size(X_est,2),'UniformOutput',false));
-
-    [x_pred,Px] = computeMomentsFromSamples(w,X_pred);
-    P_pred = Px + Q;
+    [x_pred,P_pred] = CT(@NLMotionModel,x_est,P_est,w,Q,k,T);
     
     
 end
