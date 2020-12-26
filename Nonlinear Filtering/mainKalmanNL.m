@@ -130,28 +130,21 @@ xlabel('t');
 ylabel('p');
 title(strcat(['PF estimate - N=',num2str(N_Particles)]));%. Execution time: ',' ',num2str(exec_times(3)),'s',' ','N=',num2str(N_Particles)]));
 
-figure(2)
 %%
 
 RMSE_EKF = RMSE(x_true,x_est(1,2:end));
-disp(horzcat('RMSE EKF: ',num2str(mean(RMSE_EKF))));
+disp(horzcat('RMSE EKF: ',num2str(RMSE_EKF)));
 
 RMSE_UKF = RMSE(x_true,x_est(2,2:end));
-disp(horzcat('RMSE UKF: ',num2str(mean(RMSE_UKF))));
+disp(horzcat('RMSE UKF: ',num2str(RMSE_UKF)));
 
 RMSE_CKF = RMSE(x_true,x_est(3,2:end));
-disp(horzcat('RMSE CKF: ',num2str(mean(RMSE_CKF))));
+disp(horzcat('RMSE CKF: ',num2str(RMSE_CKF)));
 
 RMSE_PF = RMSE(x_true,x_est(4,2:end));
-disp(horzcat('RMSE PF: ',num2str(mean(RMSE_PF))));
+disp(horzcat('RMSE PF: ',num2str(RMSE_PF)));
 
-plot(T:T:Tsim,RMSE_EKF); hold on
-plot(T:T:Tsim,RMSE_UKF); hold on
-plot(T:T:Tsim,RMSE_CKF); hold on
-plot(T:T:Tsim,RMSE_PF); hold on
-grid minor
-title('Error between true and estimated state')
-legend('RMSE EKF','RMSE UKF','RMSE CKF','RMSE PF')
+
 
 
 

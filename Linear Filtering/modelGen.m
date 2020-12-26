@@ -1,4 +1,4 @@
-function [A,C,Q,R,n,m] = modelGen(modelName,T,sigmaQ,sigmaR)
+function [A,C,QKF,RKF,Qsys,Rsense,n,m] = modelGen(modelName,T,sigmaQ,sigmaR,sigmaQsys,sigmaRsense)
 
 if strcmpi(modelName,'CV') %Constant velocity
 
@@ -19,16 +19,17 @@ if strcmpi(modelName,'CV') %Constant velocity
             T^2/2 0 T 0;...
             0 T^2/2 0 T];
         
-%     %Perturbations on the real system
-%     Qsys = sigmaQsys*Q;
+    %Perturbations on the real system
+    Qsys = sigmaQsys*Q; %Using this matrix gives really little perturbations to the state trajectory
+    %Qsys = sigmaQsys*eye(n);
     
     %Process noise covariance (filter)
-    Q = sigmaQ*Q;
+    QKF = sigmaQ*Q;
     
-    R = sigmaR*eye(m); %Measurement noise covariance (filter)
+    RKF = sigmaR*eye(m); %Measurement noise covariance (filter)
 %     
-%     %Sensor noise covariance
-%     Rsense = sigmaRsense*eye(m);
+    %Sensor noise covariance
+    Rsense = sigmaRsense*eye(m);
 
     
     
@@ -56,15 +57,16 @@ elseif strcmpi(modelName,'CA') %Constant acceleration
              0 T^3/6 0 T^2/2 0 T];
         
 %     %Perturbations on the real system
-%     Qsys = sigmaQsys*Q;
+    Qsys = sigmaQsys*Q;
+    %Qsys = sigmaQsys*eye(n);
     
     %Process noise covariance (filter)
-    Q = sigmaQ*Q;
+    QKF = sigmaQ*Q;
         
-    R = sigmaR*eye(m); %Measurement noise covariance (filter)
+    RKF = sigmaR*eye(m); %Measurement noise covariance (filter)
 %     
-%     %Sensor noise covariance
-%     Rsense = sigmaRsense*eye(m);
+    %Sensor noise covariance
+    Rsense = sigmaRsense*eye(m);
 
     
 end

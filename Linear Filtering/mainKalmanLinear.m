@@ -5,12 +5,12 @@ close all
 
 %This script implements a standard Kalman filter on a 2D constant velocity
 %and acceleration models.
-sigmaQKF = 0.5; %Process noise tuning for the KF
-sigmaRKF = 4; %Measurement noise tuning for the KF
-sigmaQsys = 0.1; %Real system perturbations
+sigmaQKF = 0.2; %Process noise tuning for the KF
+sigmaRKF = 2; %Measurement noise tuning for the KF
+sigmaQsys = 0.2; %Real system perturbations
 sigmaRsense= 2; %Real sensor noise
-sigmaXInit = 50; %Spread factor of the init estimate around the real state
-sigmaPInit = 50; %Tuning parameter of the error estimate covariance
+sigmaXInit = 3; %Spread factor of the init estimate around the real state
+sigmaPInit = 3; %Tuning parameter of the error estimate covariance
 
 T = 0.1; %Sampling time
 Tsim = 10; %Simulation time
@@ -21,24 +21,23 @@ trajGen = 'model';
 dynPlot = 0;
 
 %Model parameters
-[A,C,QKF,RKF,n,m] = modelGen(modelName,T,sigmaQKF,sigmaRKF); 
-
+[A,C,QKF,RKF,Qsys,Rsense,n,m] = modelGen(modelName,T,sigmaQKF,sigmaRKF,sigmaQsys,sigmaRsense); 
 
 
 %Initial state
 if strcmpi(modelName,'CV')
-    x0 = [0;0;-9;9]; %Constant velocity
+    x0 = [0;0;9;9]; %Constant velocity
 elseif strcmpi(modelName,'CA')
-    x0 = [0;0;9;30;0;-g]; %Constant acceleration
+    x0 = [0;0;10;30;0;-g]; %Constant acceleration
 end
 
 %Data generation
 if strcmpi(trajGen,'model')
-    x_true = trajectoryGen(x0,A,sigmaQsys,T,Tsim);
+    x_true = trajectoryGen(x0,A,Qsys,T,Tsim);
 elseif strcmpi(trajGen,'UD')
-    x_true = userDefTrajectory(x0,sigmaQsys,T,Tsim);
+    x_true = userDefTrajectory(x0,Qsys,T,Tsim);
 end
-[z_true, z_vector] = measurementGen(x_true,C,sigmaRsense); 
+[z_true, z_vector] = measurementGen(x_true,C,Rsense); 
 
 
 %Filtering
@@ -124,16 +123,11 @@ ylabel('p_y');
 legend('True trajectory','Estimated trajectory','Observations');
 
 
-figure(3)
-
 RMSE_KF = RMSE(x_true,x_est_vec(:,2:end));
 
-plot(T:T:Tsim,RMSE_KF);
-grid minor
-title('Error between true and estimated state')
-legend('RMSE')
+disp(strcat(['Error between true and estimated state: ',num2str(RMSE_KF)]));
 
-figure(4)
+figure(3)
 subplot(1,2,1)
 plot(T:T:Tsim,z_true(1,:)); hold on
 plot(T:T:Tsim,z_vector(1,:)); hold on
