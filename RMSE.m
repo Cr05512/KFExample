@@ -1,19 +1,10 @@
 function res = RMSE(x,y)
 % result = RMSE(x,y)
 % - x,y , xDim x T matrices
-T = size(x,2);
-xDim = size(x,1);
+N = size(x,2);
+state_dim = size(x,1);
 
-res = 0;
-
-for i=1:T
-    diff = x(:,i) - y(:,i);
-    sq_diff = diff'*diff;
-    res = res + sq_diff;
-    
-end
-
-res = sqrt(res/T);
+res = sqrt(sum(sum(((x - y).^2)./state_dim,1))/N);
 
     
 end
