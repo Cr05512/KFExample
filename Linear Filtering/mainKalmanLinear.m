@@ -18,7 +18,7 @@ g = 9.81; %Gravity
 
 modelName = 'CA'; %CV for constant velocity, CA for constant acceleration
 trajGen = 'model'; 
-dynPlot = 0;
+dynPlot = 1;
 
 %Model parameters
 [A,C,QKF,RKF,Qsys,Rsense,n,m] = modelGen(modelName,T,sigmaQKF,sigmaRKF,sigmaQsys,sigmaRsense); 
@@ -81,7 +81,7 @@ if dynPlot==1
     f1 = figure(1);
     grid minor
     hold on
-    axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
+    %axis([min(x_est_vec(1,:))-10 max(x_est_vec(1,:))+10 min(x_est_vec(2,:))-10 max(x_est_vec(2,:))+10]);
     axis square
 
     pause()
